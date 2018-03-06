@@ -12,7 +12,7 @@ province_codes = [10, 41, 50, 70, 90]
 
 
 for j in range(1,11):
-    folder_name = '../../output/prophet_changepoint_0.5/all_prov_monthly/all_prov_monthly_' + str(j)
+    folder_name = '../../output/hist_avg/all_prov_monthly/all_prov_monthly_' + str(j)
     cv_df = pd.DataFrame(columns=['province', 'year', 'monthly_case_rmse', 'year_total_error', 'peak_error', 'peak_month_error'])
 
     for prov in province_codes:
