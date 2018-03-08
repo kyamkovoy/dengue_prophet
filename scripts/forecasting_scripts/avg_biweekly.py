@@ -34,9 +34,14 @@ def get_monthly_avg(df):
 
     df_w_month = pd.DataFrame(columns = ['province', 'year', 'biweek', 'date_sick', 'cases', 'year_biweek', 'smooth_cases', 'month'])
     for year in years:
-        for i in range(1, 12):
+        for i in range(1, 13):
             month_start = str(year) + '-' + str(i)
-            month_end = str(year) + '-' + str(i+1)
+            if i < 12:
+                month_end = str(year) + '-' + str(i+1)
+            elif year != 2013:
+                month_end = str(year+1) + '-' + str(1)
+            else:
+                month_end = '2013-12-31'
             date_range = (df['date_sick'] >= month_start) & (df['date_sick'] < month_end)
             one_month = df.loc[date_range]
             one_month['month'] = i
@@ -53,7 +58,6 @@ def get_monthly_avg(df):
     return monthly_avg
 
 
-
 for j in range(1, 11):  # want to predict at 10 time intervals, from one year forward to 10 years forward
     how_many_years_forward = j
     how_many_months = 12 * how_many_years_forward
@@ -65,8 +69,11 @@ for j in range(1, 11):  # want to predict at 10 time intervals, from one year fo
             print()
 
             df = data_file[k] # predicting for year 2007 + index
+            df = df.loc[df['province'] == prov]
 
             monthly_avg = get_monthly_avg(df)
+
+            print(monthly_avg)
 
             year_total = sum(monthly_avg)
             year_peak = max(monthly_avg)

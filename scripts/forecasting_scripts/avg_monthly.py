@@ -39,7 +39,7 @@ def get_monthly_avg(df):
 
 for prov in province_codes:
 
-    past_predictions = []
+    # past_predictions = []
 
     for j in range(1, 11):  # want to predict at 10 time intervals, from one year forward to 10 years forward
         how_many_years_forward = j
@@ -51,6 +51,7 @@ for prov in province_codes:
             print()
 
             df = data_file[k] # predicting for year 2007 + index
+            df = df.loc[df['province'] == prov]
 
             # get the monthly avg values
             monthly_avg = get_monthly_avg(df)

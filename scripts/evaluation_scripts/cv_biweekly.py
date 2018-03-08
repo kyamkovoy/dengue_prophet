@@ -35,7 +35,7 @@ for j in range(1,8):
             peak = max(month_cases)
             peak_month = month_cases.index(peak) + 1
 
-            if len(month_cases) == len(forecast['month_cases']) and not 'NaN':
+            if len(month_cases) == len(forecast['month_cases']):
                 case_rmse = np.sqrt(mse(month_cases, forecast['month_cases']))
             else:
                 case_rmse = 'NaN'
