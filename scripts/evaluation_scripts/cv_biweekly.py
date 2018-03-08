@@ -12,9 +12,9 @@ province_codes = [10, 41, 50, 70, 90]
 
 
 for j in range(1,8):
-    folder_name = '../../output/prophet_changepoint_0.5/all_prov_biweekly/all_prov_biweekly_' + str(j)
+    folder_name = '../../output/hist_avg/all_prov_biweekly/all_prov_biweekly_' + str(j)
     cv_df = pd.DataFrame(columns=['province', 'year', 'monthly_case_rmse', 'year_total_error', 'peak_error', 'peak_month_error'])
-    
+
     for prov in province_codes:
         for k in range(0, 8 - j):
 
@@ -35,7 +35,7 @@ for j in range(1,8):
             peak = max(month_cases)
             peak_month = month_cases.index(peak) + 1
 
-            if len(month_cases) == len(forecast['month_cases']):
+            if len(month_cases) == len(forecast['month_cases']) and not 'NaN':
                 case_rmse = np.sqrt(mse(month_cases, forecast['month_cases']))
             else:
                 case_rmse = 'NaN'

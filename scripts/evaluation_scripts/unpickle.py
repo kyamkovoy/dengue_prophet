@@ -7,7 +7,7 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 
-with open('../../output/all_prov_monthly/errors.pkl', 'rb') as file:
+with open('../../output/hist_avg/all_prov_biweekly/all_prov_biweekly_1/prov_10_biweekly_1/prov_10_for_2007_biweekly_1.pkl', 'rb') as file:
     output = pickle.load(file)
 
 print(output)
