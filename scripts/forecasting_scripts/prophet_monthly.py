@@ -10,7 +10,7 @@ warnings.simplefilter(action='ignore')
 
 province_codes = [10, 41, 50, 70, 90]
 
-with open('../../output/cv_df_list_prospective_monthly.pkl', 'rb') as file:
+with open('../../output/cv_df_list_prospective_monthly_july.pkl', 'rb') as file:
     data_file = pickle.load(file)
 
 
@@ -33,7 +33,7 @@ for prov in province_codes:
         df = pd.DataFrame(list(zip(date_sick, cases)), columns=['ds', 'y'])
 
         # fit the prophet model
-        model = Prophet(changepoint_prior_scale = 0.5, interval_width=0.95, yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False)
+        model = Prophet(interval_width=0.95, yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False)
         model.fit(df)
 
         # extend the dataframe and make the prediction
@@ -52,7 +52,7 @@ for prov in province_codes:
 
 
         # save everything
-        all_folder_name = "../../output/all_prov_monthly_prophet_0.5/"
+        all_folder_name = "../../output/jun_time0/default_prophet/"
 
         if not os.path.exists(all_folder_name):
             os.makedirs(all_folder_name)
