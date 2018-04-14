@@ -7,13 +7,39 @@ import os
 import warnings
 warnings.simplefilter(action='ignore')
 
+data = '../../data/province-month.csv'
 
-def run_prophet(time_zero, growth):
+
+def get_province_data(data_path):
+
+    data = pd.read_csv(data_path)
+    smaller_data = data.loc[data['province'].isin(province_codes) & data['date_sick_year'].isin(years)]
+
+    # convert the year and month into a datetime (called date_sick)
+    smaller_data['date_sick_year'].apply(str)
+    smaller_data['month'].apply(str)
+
+    smaller_data['date_sick'] = smaller_data['date_sick_year'].map(str) + '-' + smaller_data['month'].map(str) + '-' + str(1)
+
+    return smaller_data
+
+
+def setup_data(data):
+
+    cv_df_list = []
+    for year in years:
+        df = smaller_data.loc[smaller_data['date_sick_year'] < year]
+        cv_df_list.append(df)
+
+    cv_df_list = cv_df_list[1:]
+
+
+
+def run_prophet(data_path, time_zero, growth):
 
     province_codes = [10, 41, 50, 70, 90]
+    years = [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
 
-    with open('../../output/cv_df_list_prospective_monthly.pkl', 'rb') as file:
-        data_file = pickle.load(file)
 
 
     for prov in province_codes:

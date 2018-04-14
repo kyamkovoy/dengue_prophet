@@ -111,3 +111,6 @@ venv.bak/
 /data
 /output/incidence_matrix.txt
 /output/*.pkl
+
+/images
+/deprecated
