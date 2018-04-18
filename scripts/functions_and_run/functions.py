@@ -7,10 +7,16 @@ import os
 import warnings
 warnings.simplefilter(action='ignore')
 
-data = '../../data/province-month.csv'
+# use this to get the monthly predictions starting at every month
 
+data_path = '../../data/province-month.csv'
+
+#------------------------------------------------------------------------------------------------------------------------------
 
 def get_province_data(data_path):
+
+    province_codes = [10, 41, 50, 70, 90]
+    years = [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
 
     data = pd.read_csv(data_path)
     smaller_data = data.loc[data['province'].isin(province_codes) & data['date_sick_year'].isin(years)]
@@ -24,75 +30,65 @@ def get_province_data(data_path):
     return smaller_data
 
 
-def setup_data(data):
+#----------------------------------------------------------------------------------------------------------------------------
 
-    cv_df_list = []
-    for year in years:
-        df = smaller_data.loc[smaller_data['date_sick_year'] < year]
-        cv_df_list.append(df)
+def setup_data(data, province, year, month):  # year and month being predicted for
+    # years: 2006-2016, forecast for 2007+ starting in every month
 
-    cv_df_list = cv_df_list[1:]
+    prov_data = data.loc[(data['province'] == province) & (data['date_sick_year'] < (year + 1))]
+    cutoff = 13 - month
+    df = prov_data.head(prov_data.shape[0]-cutoff)
+
+    date_sick = df['date_sick']
+    cases = np.array(df['cases'])
+
+    # prepare dataframe for prophet
+    df = pd.DataFrame(list(zip(date_sick, cases)), columns=['ds', 'y'])
+
+    return df
 
 
+#--------------------------------------------------------------------------------------------------------------------------------------------
 
-def run_prophet(data_path, time_zero, growth):
+def run_prophet(data):
 
     province_codes = [10, 41, 50, 70, 90]
     years = [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
 
-
-
     for prov in province_codes:
-        for k in range(0, 10):
-            print()
-            print('forecasting for province ' + str(prov) + ' for year ' + str(2007 + k))
-            print()
+        for year in range(2007, 2017):
+            for month in range(1, 13):
 
-            input_data = data_file[k] # predicting for year 2007 + index
+                df = setup_data(data, prov, year, month)
 
-            date_sick = input_data['date_sick'].loc[input_data['province'] == 10]
-            year = input_data['date_sick_year'].loc[input_data['province'] == 10]
+                print()
+                print('forecasting...')
+                print('province: ' + str(prov) + ', year: ' + str(year) + ', month: ' + str(month))
+                print()
 
-            cases_one_prov = input_data['cases'].loc[input_data['province'] == prov].tolist()
-            cases = np.array(cases_one_prov)  # an array of the cases for the one province
+                model = Prophet(interval_width=0.95, changepoint_prior_scale=0.5, yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False)
+                model.fit(df)
 
+                future_dates = model.make_future_dataframe(periods=12, freq='M')
+                past_and_forecast = model.predict(future_dates)
+                forecast = past_and_forecast.tail(12)
 
-            # prepare dataframe for prophet
-            df = pd.DataFrame(list(zip(date_sick, cases)), columns=['ds', 'y'])
+                all_folder_name = "../../output/monthly_forecasts/flexible_prophet/"
 
-            # fit the prophet model
-            model = Prophet(interval_width=0.95, yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False)
-            model.fit(df)
+                if not os.path.exists(all_folder_name):
+                    os.makedirs(all_folder_name)
 
-            # extend the dataframe and make the prediction
-            future_dates = model.make_future_dataframe(periods=12, freq='M')
-            past_and_forecast = model.predict(future_dates)
-            forecast = past_and_forecast.tail(12)
+                folder_name = all_folder_name + '/prov_' + str(prov) + '_monthly/'
+                file_name = 'prov_' + str(prov) + '_' + str(year) + '_' + str(month) + '_monthly.csv'
 
+                if not os.path.exists(folder_name):
+                    os.makedirs(folder_name)
 
-            # get the targets
-            month_cases = forecast['yhat'].tolist()
-            year_total = sum(month_cases)
-            year_peak = max(month_cases)
-            peak_month = month_cases.index(year_peak) + 1
+                print()
+                print("saving output to " + file_name)  # CHANGE PROV AND YEAR HERE
 
-            all_targets = {'year_total': year_total, 'year_peak': year_peak, 'peak_month': peak_month, 'month_cases': month_cases}
+                forecast.to_csv(folder_name + file_name, index=False)
 
-
-            # save everything
-            all_folder_name = "../../output/jun_time0/default_prophet/"
-
-            if not os.path.exists(all_folder_name):
-                os.makedirs(all_folder_name)
-
-            folder_name = all_folder_name + "/" + "prov_" + str(prov) + "_monthly"
-            file_name = "prov_" + str(prov) + "_for_" + str(2007 + k) + "_monthly.pkl"
-
-            if not os.path.exists(folder_name):
-                os.makedirs(folder_name)
-
-            print()
-            print("saving output to " + file_name)  # CHANGE PROV AND YEAR HERE
-
-            with open(folder_name + '/' + file_name, 'wb') as file:  # CHANGE PROV AND YEAR HERE
-                pickle.dump(all_targets, file)
+    print()
+    print('done')
+    print()
