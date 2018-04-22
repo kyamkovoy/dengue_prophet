@@ -7,17 +7,32 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 data =  pd.read_csv('../../data/province-month.csv')
-
 province_codes = [10, 41, 50, 70, 90]
 
-which_model = 'cp_prophet'
-which_time0 = 'jul_time0'
+which_model = 'default_prophet'
 
+folder_name = '../../output/monthly_forecasts/' + which_model + '/'
 
-folder_name = '../../output/' + which_time0 + '/' + which_model
-cv_df = pd.DataFrame(columns=['province', 'year', 'monthly_case_rmse', 'year_total_error', 'peak_error', 'peak_month_error'])
+# -----------------------------------------------------------------------------------------------------------------
+
+cv_df = pd.DataFrame(columns=['province', 'year', 'month', 'error'])
 
 for prov in province_codes:
+    prov_folder = folder_name + 'prov_' + str(prov) + '_monthly/'
+
+    for year in range(2008, 2017):
+        for month in range(1, 13):
+            file_name = prov_folder + 'prov_' + str(prov) + '_' + str(year) + '_' + str(month) + '_monthly.csv'
+            forecast_df = pd.read_csv(file_name)
+
+            forecast_cases = np.array(forecast_df['yhat'])
+
+
+
+
+
+
+
     for k in range(0, 10):
 
         year = 2007 + k

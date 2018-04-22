@@ -10,7 +10,7 @@ warnings.simplefilter(action='ignore')
 
 province_codes = [10, 41, 50, 70, 90]
 
-with open('../../output/cv_df_list_prospective_monthly.pkl', 'rb') as file:
+with open('../../output/cv_df_list_prospective_monthly_july.pkl', 'rb') as file:
     data_file = pickle.load(file)
 
 

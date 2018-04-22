@@ -9,7 +9,7 @@ warnings.simplefilter(action='ignore')
 
 data = pd.read_csv('../../data/province-month.csv')
 province_codes = [10, 41, 50, 70, 90]
-years = [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
+years = [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
 
 # use just data for the five provinces
 # make a list of dataframes with missing years
