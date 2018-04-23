@@ -9,7 +9,7 @@ warnings.simplefilter(action='ignore')
 data =  pd.read_csv('../../data/province-month.csv')
 province_codes = [10, 41, 50, 70, 90]
 
-which_model = 'default_prophet'
+which_model = 'flexible_prophet'
 
 folder_name = '../../output/monthly_forecasts/' + which_model + '/'
 
@@ -19,10 +19,13 @@ for prov in province_codes:
     prov_folder = folder_name + 'prov_' + str(prov) + '_monthly/'
     prov_data = data.loc[data['province'] == prov]
 
-    for year in range(2008, 2017):
+    for year in range(2007, 2017):
         for month in range(1, 13):
             # load the file for forecasts starting in month, year and get forecasts into an array
             file_name = prov_folder + 'prov_' + str(prov) + '_' + str(year) + '_' + str(month) + '_monthly.csv'
+
+            print(file_name)
+
             forecast_df = pd.read_csv(file_name)
             forecast_cases = np.array(forecast_df['yhat'])
 
@@ -37,9 +40,15 @@ for prov in province_codes:
             # now get the list of true cases
             true_cases = []
             for i in range(0, 12):
-                year = year_list[i]
-                month = month_list[i]
-                cases_df = float(prov_data['cases'].loc[(prov_data['date_sick_year'] == year) &  (prov_data['month'] == month)])
+                one_year = year_list[i]
+                one_month = month_list[i]
+                print(one_year)
+                print(one_month)
+                blah = prov_data['cases'].loc[(prov_data['date_sick_year'] == one_year) &  (prov_data['month'] == one_month)]
+                if type(blah) == float:
+                    cases_df = float(blah)
+                else:
+                    cases_df = 0.0
                 true_cases.append(cases_df)
 
             true_cases = np.array(true_cases)
