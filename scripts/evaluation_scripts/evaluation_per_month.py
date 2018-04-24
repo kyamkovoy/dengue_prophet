@@ -7,9 +7,9 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 data =  pd.read_csv('../../data/province-month.csv')
-province_codes = [10, 41, 50, 70, 90]
+province_codes = [10]
 
-which_model = 'flexible_prophet'
+which_model = 'default_prophet'
 
 folder_name = '../../output/monthly_forecasts/' + which_model + '/'
 
@@ -45,10 +45,16 @@ for prov in province_codes:
                 print(one_year)
                 print(one_month)
                 blah = prov_data['cases'].loc[(prov_data['date_sick_year'] == one_year) &  (prov_data['month'] == one_month)]
-                if type(blah) == float:
+
+                print(blah)
+                print(type(blah))
+
+                cases_df = 0
+                if blah.shape[0] == 1:
                     cases_df = float(blah)
                 else:
-                    cases_df = 0.0
+                    cases_df = 0.
+
                 true_cases.append(cases_df)
 
             true_cases = np.array(true_cases)
@@ -61,3 +67,6 @@ for prov in province_codes:
 
             save_file = prov_folder + 'prov_' + str(prov) + '_' + str(year) + '_' + str(month) + '_monthly_errors.csv'
             error_df.to_csv(save_file, index=False)
+
+            print(true_cases)
+            print(forecast_cases)
