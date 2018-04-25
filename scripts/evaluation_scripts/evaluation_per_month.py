@@ -7,9 +7,9 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 data =  pd.read_csv('../../data/province-month.csv')
-province_codes = [10]
+province_codes = [70, 90]
 
-which_model = 'default_prophet'
+which_model = 'hist_avg'
 
 folder_name = '../../output/monthly_forecasts/' + which_model + '/'
 
@@ -27,7 +27,8 @@ for prov in province_codes:
             print(file_name)
 
             forecast_df = pd.read_csv(file_name)
-            forecast_cases = np.array(forecast_df['yhat'])
+            # forecast_cases = np.array(forecast_df['yhat'])
+            forecast_cases = np.array(forecast_df['forecast'])
 
             # list of months in order, ie if month = 3, list starts at 3, ends at 2, contains 12 months
             months_first = np.arange(month, 13)
@@ -62,7 +63,7 @@ for prov in province_codes:
             # get the errors and put everything into a dataframe
             errors = abs(true_cases - forecast_cases)
 
-            error_dict = {'year': year_list, 'month': month_list, 'error': errors}
+            error_dict = {'year': year_list, 'month': month_list, 'error': errors, 'true_cases': true_cases, 'forecast_cases': forecast_cases}
             error_df = pd.DataFrame(error_dict)
 
             save_file = prov_folder + 'prov_' + str(prov) + '_' + str(year) + '_' + str(month) + '_monthly_errors.csv'
